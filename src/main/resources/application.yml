@@ -12,3 +12,6 @@ logging:
     com.fasterxml.jackson: DEBUG
     org.springframework.http: DEBUG
     com.fasterxml.jackson.databind: TRACE
+jwt:
+  expiration-sec: 3600000
+  secret-key: secret-key

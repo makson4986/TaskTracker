@@ -1,0 +1,6 @@
+ext {
+    versions = [
+            "jjwt": '0.12.3',
+            "nimbus": '10.4.2'
+    ]
+}
