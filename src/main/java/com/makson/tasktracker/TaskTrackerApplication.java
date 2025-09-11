@@ -13,11 +13,6 @@ public class TaskTrackerApplication {
 
     @SneakyThrows
     public static void main(String[] args) {
-        KeyGenerator keyGen = KeyGenerator.getInstance("AES");
-        keyGen.init(256);
-        SecretKey secretKey = keyGen.generateKey();
-        System.out.println(Base64.getEncoder().encodeToString(secretKey.getEncoded()));
-
         SpringApplication.run(TaskTrackerApplication.class, args);
     }
 

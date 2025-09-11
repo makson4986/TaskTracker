@@ -1,4 +1,4 @@
-package com.makson.tasktracker;
+package com.makson.tasktracker.filters;
 
 import com.makson.tasktracker.services.JwtService;
 import jakarta.servlet.FilterChain;

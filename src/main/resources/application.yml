@@ -1,4 +1,6 @@
 spring:
+  profiles:
+    active: dev
   datasource:
     url: jdbc:postgresql://localhost:5433/task_tracker
     username: postgres
@@ -6,6 +8,10 @@ spring:
     driver-class-name: org.postgresql.Driver
   liquibase:
     change-log: classpath:/db/changelog/db.changelog-master.yaml
+springdoc:
+  swagger-ui:
+    path: /api/docs
+    url: /documentation.yml
 logging:
   level:
     org.springframework.web: DEBUG

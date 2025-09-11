@@ -47,7 +47,7 @@ public class JwtService {
             SignedJWT signedJWT = new SignedJWT(new JWSHeader(JWSAlgorithm.HS256), claimsSet);
             signedJWT.sign(new MACSigner(secretKey));
 
-            JWEObject jwe = new JWEObject(new JWEHeader.Builder(JWEAlgorithm.DIR, EncryptionMethod.A192GCM)
+            JWEObject jwe = new JWEObject(new JWEHeader.Builder(JWEAlgorithm.DIR, EncryptionMethod.A256GCM)
                     .contentType("JWT")
                     .build(),
                     new Payload(signedJWT.serialize())
