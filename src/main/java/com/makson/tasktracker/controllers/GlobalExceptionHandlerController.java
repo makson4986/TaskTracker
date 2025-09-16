@@ -1,6 +1,9 @@
 package com.makson.tasktracker.controllers;
 
 import com.makson.tasktracker.dto.ErrorDto;
+import com.makson.tasktracker.exceptions.InvalidJwtException;
+import com.makson.tasktracker.exceptions.JwtClaimsException;
+import com.makson.tasktracker.exceptions.JwtExtractionException;
 import com.makson.tasktracker.exceptions.UserAlreadyExistException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
@@ -32,6 +35,15 @@ public class GlobalExceptionHandlerController {
         return ResponseEntity.badRequest().body(errorDto);
     }
 
+    @ExceptionHandler({
+            JwtClaimsException.class,
+            InvalidJwtException.class,
+            JwtExtractionException.class
+    })
+    public ResponseEntity<?> handleAuthenticationException(Exception ex) {
+        log.warn(ex.getMessage());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorDto(ex.getMessage()));
+    }
 
     @ExceptionHandler(UserAlreadyExistException.class)
     public ResponseEntity<?> handleConflictException(Exception ex) {

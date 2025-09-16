@@ -1,6 +1,9 @@
 package com.makson.tasktracker.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.makson.tasktracker.dto.ErrorDto;
 import com.makson.tasktracker.filters.JwtFilter;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,6 +17,7 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.security.web.context.DelegatingSecurityContextRepository;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.context.RequestAttributeSecurityContextRepository;
@@ -26,10 +30,7 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf(AbstractHttpConfigurer::disable)
-                .formLogin(AbstractHttpConfigurer::disable)
-                .logout(AbstractHttpConfigurer::disable);
-
+        http.csrf(AbstractHttpConfigurer::disable).formLogin(AbstractHttpConfigurer::disable);
         http.authorizeHttpRequests(authorize -> authorize
                 .requestMatchers(
                         "/api/user",
@@ -41,6 +42,16 @@ public class SecurityConfig {
                 .permitAll()
                 .anyRequest().authenticated()
         );
+
+        http.exceptionHandling(ex -> {
+            ex.authenticationEntryPoint((req, resp, e) -> {
+                resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                resp.setContentType("application/json");
+                ErrorDto error = new ErrorDto("User is not authorized!");
+                new ObjectMapper().writeValue(resp.getWriter(), error);
+            });
+        });
+
         http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
@@ -65,6 +76,11 @@ public class SecurityConfig {
                 new RequestAttributeSecurityContextRepository(),
                 new HttpSessionSecurityContextRepository()
         );
+    }
+
+    @Bean
+    public SecurityContextLogoutHandler securityContextLogoutHandler() {
+        return new SecurityContextLogoutHandler();
     }
 
     @Bean

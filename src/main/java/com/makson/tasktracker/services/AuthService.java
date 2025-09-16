@@ -16,6 +16,7 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.stereotype.Service;
 
@@ -28,6 +29,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final UserService userService;
     private final JwtService jwtService;
+    private final SecurityContextLogoutHandler securityContextLogoutHandler;
 
     public JwtResponseDto signUp(UserDto userDto) {
         User user = User.builder()
@@ -59,5 +61,9 @@ public class AuthService {
 
         User user = (User) authenticate.getPrincipal();
         return new JwtResponseDto(jwtService.generateToken(user));
+    }
+
+    public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
+        securityContextLogoutHandler.logout(request, response, authentication);
     }
 }

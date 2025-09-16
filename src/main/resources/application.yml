@@ -14,7 +14,9 @@ springdoc:
     url: /documentation.yml
 logging:
   level:
-    org.springframework.web: DEBUG
+    org.springframework:
+      web: DEBUG
+      security: DEBUG
     com.fasterxml.jackson: DEBUG
     org.springframework.http: DEBUG
     com.fasterxml.jackson.databind: TRACE
