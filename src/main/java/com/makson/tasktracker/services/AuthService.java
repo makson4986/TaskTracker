@@ -1,7 +1,7 @@
 package com.makson.tasktracker.services;
 
 import com.makson.tasktracker.dto.JwtResponseDto;
-import com.makson.tasktracker.dto.UserDto;
+import com.makson.tasktracker.dto.RegistrationDto;
 import com.makson.tasktracker.exceptions.DataBaseException;
 import com.makson.tasktracker.exceptions.UserAlreadyExistException;
 import com.makson.tasktracker.models.User;
@@ -14,7 +14,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.security.web.context.SecurityContextRepository;
@@ -31,10 +30,10 @@ public class AuthService {
     private final JwtService jwtService;
     private final SecurityContextLogoutHandler securityContextLogoutHandler;
 
-    public JwtResponseDto signUp(UserDto userDto) {
+    public JwtResponseDto signUp(RegistrationDto registrationDto) {
         User user = User.builder()
-                .email(userDto.email())
-                .password(passwordEncoder.encode(userDto.password()))
+                .email(registrationDto.email())
+                .password(passwordEncoder.encode(registrationDto.password()))
                 .build();
 
         User registeredUser;
@@ -50,9 +49,9 @@ public class AuthService {
         return new JwtResponseDto(jwtService.generateToken(registeredUser));
     }
 
-    public JwtResponseDto signIn(UserDto userDto, HttpServletRequest request, HttpServletResponse response) {
+    public JwtResponseDto signIn(RegistrationDto registrationDto, HttpServletRequest request, HttpServletResponse response) {
         Authentication authenticate = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(userDto.email(), userDto.password()));
+                new UsernamePasswordAuthenticationToken(registrationDto.email(), registrationDto.password()));
 
         SecurityContext context = SecurityContextHolder.createEmptyContext();
         context.setAuthentication(authenticate);
