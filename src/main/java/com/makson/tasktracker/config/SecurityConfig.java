@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -33,13 +34,13 @@ public class SecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable).formLogin(AbstractHttpConfigurer::disable);
         http.authorizeHttpRequests(authorize -> authorize
                 .requestMatchers(
-                        "/api/user",
                         "/api/auth/login",
                         "/api/docs",
                         "/api/swagger-ui/**",
                         "/v3/**",
                         "/documentation.yml")
                 .permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/user").permitAll()
                 .anyRequest().authenticated()
         );
 

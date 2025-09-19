@@ -4,7 +4,7 @@
 CREATE TABLE IF NOT EXISTS users
 (
     id       SERIAL PRIMARY KEY,
-    email    VARCHAR(16) UNIQUE NOT NULL,
+    email    VARCHAR(255) UNIQUE NOT NULL,
     password VARCHAR(512)       NOT NULL
 );
 --rollback DROP TABLE users;

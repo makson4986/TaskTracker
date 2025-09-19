@@ -33,7 +33,7 @@ public class JwtFilter extends OncePerRequestFilter {
         UserDetails userDetails = jwtService.verifyToken(jwe);
 
         if (SecurityContextHolder.getContext().getAuthentication() == null) {
-            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null);
+            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null,  userDetails.getAuthorities());
             authentication.setDetails(new WebAuthenticationDetails(request));
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
