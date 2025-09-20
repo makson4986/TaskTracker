@@ -11,11 +11,20 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class TaskService {
     private final TaskRepository taskRepository;
     private final TaskMapper mapper;
+
+    @Transactional(readOnly = true)
+    public List<TaskResponseDto> getAll(User user) {
+        List<Task> tasks = taskRepository.getTasksByOwner(user);
+        return mapper.toDto(tasks);
+    }
+
 
     @Transactional
     public TaskResponseDto create(TaskRequestDto taskDto, User user) {

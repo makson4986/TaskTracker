@@ -10,13 +10,21 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/tasks")
 @RequiredArgsConstructor
-public class TaskController {
+public class TasksController {
     private final TaskService taskService;
 
-    @PostMapping("/tasks")
+    @GetMapping
+    public ResponseEntity<?> getAll(@AuthenticationPrincipal User user) {
+        List<TaskResponseDto> tasks = taskService.getAll(user);
+        return ResponseEntity.ok(tasks);
+    }
+
+    @PostMapping
     public ResponseEntity<?> addTask(@RequestBody TaskRequestDto task, @AuthenticationPrincipal User user) {
         TaskResponseDto createdTask = taskService.create(task, user);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdTask);
