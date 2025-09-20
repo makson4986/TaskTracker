@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS tasks
     text   TEXT         NOT NULL,
     owner  INT          NOT NULL,
     status VARCHAR(32)  NOT NULL DEFAULT 'NOT_DONE',
-    performedAt   TIMESTAMP,
+    performed_at   TIMESTAMP,
     FOREIGN KEY (owner) REFERENCES users (id)
 );
 --rollback DROP TABLE tasks;

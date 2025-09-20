@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.makson.tasktracker.dto.JwtResponseDto;
 import com.makson.tasktracker.dto.RegistrationDto;
 import com.makson.tasktracker.dto.UserDto;
+import com.makson.tasktracker.mappers.UserMapper;
 import com.makson.tasktracker.models.User;
 import com.makson.tasktracker.services.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,7 +22,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class AuthController {
     private final AuthService authService;
-    private final ObjectMapper objectMapper;
+    private final UserMapper mapper;
 
     @PostMapping("/user")
     public ResponseEntity<?> singUp(@RequestBody @Validated RegistrationDto user) {
@@ -43,6 +44,6 @@ public class AuthController {
 
     @GetMapping("/user")
     public ResponseEntity<?> getCurrentUser(@AuthenticationPrincipal User user) {
-        return ResponseEntity.ok(objectMapper.convertValue(user, UserDto.class));
+        return ResponseEntity.ok(mapper.toDto(user));
     }
 }

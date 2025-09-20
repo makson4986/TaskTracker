@@ -17,10 +17,16 @@ public class Task {
     private int id;
     private String title;
     private String text;
+
     @ManyToOne
     @JoinColumn(name = "owner")
     private User owner;
+
+    @Builder.Default
     @Enumerated(EnumType.STRING)
-    private TaskStatus status;
-    private LocalDateTime performedAt;
+    private TaskStatus status = TaskStatus.NOT_DONE;
+
+    @Builder.Default
+    @Column(name = "performed_at")
+    private LocalDateTime performedAt = LocalDateTime.now();
 }
