@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,8 +26,14 @@ public class TasksController {
     }
 
     @PostMapping
-    public ResponseEntity<?> addTask(@RequestBody TaskRequestDto task, @AuthenticationPrincipal User user) {
+    public ResponseEntity<?> addTask(@Validated @RequestBody TaskRequestDto task, @AuthenticationPrincipal User user) {
         TaskResponseDto createdTask = taskService.create(task, user);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdTask);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getById(@AuthenticationPrincipal User user, @PathVariable Integer id) {
+        TaskResponseDto task = taskService.getById(id, user);
+        return ResponseEntity.ok(task);
     }
 }

@@ -1,10 +1,7 @@
 package com.makson.tasktracker.controllers;
 
 import com.makson.tasktracker.dto.ErrorDto;
-import com.makson.tasktracker.exceptions.InvalidJwtException;
-import com.makson.tasktracker.exceptions.JwtClaimsException;
-import com.makson.tasktracker.exceptions.JwtExtractionException;
-import com.makson.tasktracker.exceptions.UserAlreadyExistException;
+import com.makson.tasktracker.exceptions.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
@@ -12,11 +9,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandlerController {
-    @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ExceptionHandler({
+            MethodArgumentNotValidException.class,
+            MethodArgumentTypeMismatchException.class
+    })
     public ResponseEntity<?> handleBadRequestException(Exception ex) {
         ErrorDto errorDto;
 
@@ -27,6 +28,8 @@ public class GlobalExceptionHandlerController {
                             .toList()
                             .getFirst()
             );
+        } else if (ex instanceof MethodArgumentTypeMismatchException) {
+            errorDto = new ErrorDto("The ID is incorrect");
         } else {
             errorDto = new ErrorDto(ex.getMessage());
         }
@@ -49,6 +52,12 @@ public class GlobalExceptionHandlerController {
     public ResponseEntity<?> handleConflictException(Exception ex) {
         log.warn(ex.getMessage());
         return ResponseEntity.status(HttpStatus.CONFLICT).body(new ErrorDto(ex.getMessage()));
+    }
+
+    @ExceptionHandler(TaskNotFoundException.class)
+    public ResponseEntity<?> handleNotFoundException(Exception ex) {
+        log.warn(ex.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorDto(ex.getMessage()));
     }
 
     @ExceptionHandler(Exception.class)
