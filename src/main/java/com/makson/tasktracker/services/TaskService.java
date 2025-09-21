@@ -36,9 +36,9 @@ public class TaskService {
 
     @Transactional(readOnly = true)
     public TaskResponseDto findById(Integer id, User user) {
-        Optional<Task> optionalTask = taskRepository.findById(id);
+        Optional<Task> optionalTask = taskRepository.findByIdAndOwner(id, user);
 
-        if (optionalTask.isEmpty() || !optionalTask.get().getOwner().equals(user)) {
+        if (optionalTask.isEmpty()) {
             throw new TaskNotFoundException("Task with %s id isn't found".formatted(id));
         }
 
@@ -47,7 +47,6 @@ public class TaskService {
 
     @Transactional
     public void deleteById(Integer id, User user) {
-        findById(id, user);
-        taskRepository.deleteById(id);
+        taskRepository.deleteByIdAndOwner(id, user);
     }
 }
