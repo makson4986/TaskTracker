@@ -1,6 +1,5 @@
 package com.makson.tasktracker.services;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.makson.tasktracker.dto.TaskRequestDto;
 import com.makson.tasktracker.dto.TaskResponseDto;
 import com.makson.tasktracker.exceptions.TaskNotFoundException;
@@ -36,7 +35,7 @@ public class TaskService {
     }
 
     @Transactional(readOnly = true)
-    public TaskResponseDto getById(Integer id, User user) {
+    public TaskResponseDto findById(Integer id, User user) {
         Optional<Task> optionalTask = taskRepository.findById(id);
 
         if (optionalTask.isEmpty() || !optionalTask.get().getOwner().equals(user)) {
@@ -46,4 +45,9 @@ public class TaskService {
         return mapper.toDto(optionalTask.get());
     }
 
+    @Transactional
+    public void deleteById(Integer id, User user) {
+        findById(id, user);
+        taskRepository.deleteById(id);
+    }
 }

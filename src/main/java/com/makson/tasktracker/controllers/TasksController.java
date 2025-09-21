@@ -33,7 +33,13 @@ public class TasksController {
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getById(@AuthenticationPrincipal User user, @PathVariable Integer id) {
-        TaskResponseDto task = taskService.getById(id, user);
+        TaskResponseDto task = taskService.findById(id, user);
         return ResponseEntity.ok(task);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteById(@AuthenticationPrincipal User user, @PathVariable Integer id) {
+        taskService.deleteById(id, user);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }
