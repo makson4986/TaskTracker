@@ -37,16 +37,33 @@ public class TaskService {
     @Transactional(readOnly = true)
     public TaskResponseDto findById(Integer id, User user) {
         Optional<Task> optionalTask = taskRepository.findByIdAndOwner(id, user);
-
-        if (optionalTask.isEmpty()) {
-            throw new TaskNotFoundException("Task with %s id isn't found".formatted(id));
-        }
-
-        return mapper.toDto(optionalTask.get());
+        Task task = checkExists(optionalTask);
+        return mapper.toDto(task);
     }
 
     @Transactional
     public void deleteById(Integer id, User user) {
         taskRepository.deleteByIdAndOwner(id, user);
+    }
+
+    @Transactional
+    public TaskResponseDto update(TaskRequestDto taskDto, User user, Integer id) {
+        Optional<Task> optionalTask = taskRepository.findByIdAndOwner(id, user);
+        Task task = checkExists(optionalTask);
+
+        if (!taskDto.text().isBlank()) {
+            task.setText(taskDto.text());
+        }
+
+        if (!taskDto.title().isBlank()) {
+            task.setTitle(taskDto.title());
+        }
+
+        Task updatedTask = taskRepository.save(task);
+        return mapper.toDto(updatedTask);
+    }
+
+    private Task checkExists(Optional<Task> task) {
+        return task.orElseThrow(() -> new TaskNotFoundException("Task isn't found"));
     }
 }

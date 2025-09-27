@@ -42,4 +42,10 @@ public class TasksController {
         taskService.deleteById(id, user);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<?> update(@RequestBody TaskRequestDto task, @AuthenticationPrincipal User user, @PathVariable Integer id) {
+        TaskResponseDto updatedTask = taskService.update(task, user, id);
+        return ResponseEntity.ok(updatedTask);
+    }
 }
