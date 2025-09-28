@@ -14,3 +14,4 @@ public interface TaskRepository extends JpaRepository<Task, Integer> {
 
     void deleteByIdAndOwner(Integer id, User user);
 }
+

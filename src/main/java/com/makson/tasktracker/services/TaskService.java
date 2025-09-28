@@ -1,10 +1,12 @@
 package com.makson.tasktracker.services;
 
-import com.makson.tasktracker.dto.TaskRequestDto;
+import com.makson.tasktracker.dto.TaskCreationDto;
 import com.makson.tasktracker.dto.TaskResponseDto;
+import com.makson.tasktracker.dto.TaskUpdateDto;
 import com.makson.tasktracker.exceptions.TaskNotFoundException;
 import com.makson.tasktracker.mappers.TaskMapper;
 import com.makson.tasktracker.models.Task;
+import com.makson.tasktracker.models.TaskStatus;
 import com.makson.tasktracker.models.User;
 import com.makson.tasktracker.repositories.TaskRepository;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +29,7 @@ public class TaskService {
     }
 
     @Transactional
-    public TaskResponseDto create(TaskRequestDto taskDto, User user) {
+    public TaskResponseDto create(TaskCreationDto taskDto, User user) {
         Task task = mapper.toEntity(taskDto);
         task.setOwner(user);
         Task savedTask = taskRepository.save(task);
@@ -47,7 +49,7 @@ public class TaskService {
     }
 
     @Transactional
-    public TaskResponseDto update(TaskRequestDto taskDto, User user, Integer id) {
+    public TaskResponseDto update(TaskUpdateDto taskDto, User user, Integer id) {
         Optional<Task> optionalTask = taskRepository.findByIdAndOwner(id, user);
         Task task = checkExists(optionalTask);
 
@@ -59,9 +61,17 @@ public class TaskService {
             task.setTitle(taskDto.title());
         }
 
+        try {
+            task.setStatus(TaskStatus.valueOf(taskDto.status()));
+        }  catch (IllegalArgumentException | NullPointerException _) {
+
+        }
+
+
         Task updatedTask = taskRepository.save(task);
         return mapper.toDto(updatedTask);
     }
+
 
     private Task checkExists(Optional<Task> task) {
         return task.orElseThrow(() -> new TaskNotFoundException("Task isn't found"));

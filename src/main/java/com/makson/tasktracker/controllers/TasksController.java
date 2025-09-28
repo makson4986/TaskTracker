@@ -1,7 +1,9 @@
 package com.makson.tasktracker.controllers;
 
-import com.makson.tasktracker.dto.TaskRequestDto;
+import com.makson.tasktracker.dto.TaskCreationDto;
 import com.makson.tasktracker.dto.TaskResponseDto;
+import com.makson.tasktracker.dto.TaskUpdateDto;
+import com.makson.tasktracker.models.TaskStatus;
 import com.makson.tasktracker.models.User;
 import com.makson.tasktracker.services.TaskService;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +28,7 @@ public class TasksController {
     }
 
     @PostMapping
-    public ResponseEntity<?> addTask(@Validated @RequestBody TaskRequestDto task, @AuthenticationPrincipal User user) {
+    public ResponseEntity<?> addTask(@Validated @RequestBody TaskCreationDto task, @AuthenticationPrincipal User user) {
         TaskResponseDto createdTask = taskService.create(task, user);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdTask);
     }
@@ -44,7 +46,7 @@ public class TasksController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<?> update(@RequestBody TaskRequestDto task, @AuthenticationPrincipal User user, @PathVariable Integer id) {
+    public ResponseEntity<?> update(@RequestBody TaskUpdateDto task, @AuthenticationPrincipal User user, @PathVariable Integer id) {
         TaskResponseDto updatedTask = taskService.update(task, user, id);
         return ResponseEntity.ok(updatedTask);
     }

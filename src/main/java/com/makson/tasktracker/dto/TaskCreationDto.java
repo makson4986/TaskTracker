@@ -2,7 +2,7 @@ package com.makson.tasktracker.dto;
 
 import jakarta.validation.constraints.NotBlank;
 
-public record TaskRequestDto(
+public record TaskCreationDto(
         @NotBlank(message = "Title must not be empty")
         String title,
         @NotBlank(message = "Text must not be empty")

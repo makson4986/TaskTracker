@@ -1,6 +1,6 @@
 package com.makson.tasktracker.mappers;
 
-import com.makson.tasktracker.dto.TaskRequestDto;
+import com.makson.tasktracker.dto.TaskCreationDto;
 import com.makson.tasktracker.dto.TaskResponseDto;
 import com.makson.tasktracker.models.Task;
 import org.mapstruct.Mapper;
@@ -13,5 +13,5 @@ public interface TaskMapper {
 
     List<TaskResponseDto> toDto(List<Task> tasks);
 
-    Task toEntity(TaskRequestDto taskDto);
+    Task toEntity(TaskCreationDto taskDto);
 }
