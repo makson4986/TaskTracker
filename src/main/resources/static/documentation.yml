@@ -1,0 +1,341 @@
+openapi: 3.1.0
+info:
+  title: Swagger CloudFileStorage - OpenAPI 3.0
+  description: |-
+    Multi-user task planner. Users can use it as a TODO list. 
+    The project is inspired by Trello.
+  version: 1.0.12
+tags:
+  - name: User
+    description: Operations about user
+  - name: Task
+    description: Operations about tasks
+paths:
+  /api/user:
+    post:
+      tags:
+        - User
+      summary: User registration
+      description: Allows you to register a user
+      operationId: userRegistration
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Registration'
+      responses:
+        "201":
+          description: User registration successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Jwt'
+        "400":
+          $ref: '#/components/responses/ValidationError'
+        "409":
+          description: User already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+    get:
+      tags:
+        - User
+      security:
+        - jwtAuth: [ ]
+      summary: Current user
+      description: Returns the currently logged in user
+      operationId: currentUser
+      responses:
+        "200":
+          description: Successful request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        "401":
+          $ref: '#/components/responses/UnauthorizedError'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+  /api/auth/login:
+    post:
+      tags:
+        - User
+      summary: Login
+      description: Allows you to login
+      operationId: login
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Registration'
+      responses:
+        "200":
+          description: Successful login
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Jwt'
+        "400":
+          $ref: '#/components/responses/ValidationError'
+        "401":
+          description: Incorrect credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+  /api/auth/logout:
+    post:
+      tags:
+        - User
+      security:
+        - jwtAuth: [ ]
+      summary: Logout
+      description: Allows users to log out of the system
+      operationId: logout
+      responses:
+        "204":
+          description: Successful logout
+        "401":
+          $ref: '#/components/responses/UnauthorizedError'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+  /api/tasks:
+    post:
+      tags:
+        - Task
+      security:
+        - jwtAuth: [ ]
+      summary: Create a new task
+      description: Allows you to create a new task
+      operationId: createTask
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskCreation'
+      responses:
+        "201":
+          description: Successful creation of a new task
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskResponse'
+        "400":
+          $ref: '#/components/responses/ValidationError'
+        "401":
+          $ref: '#/components/responses/UnauthorizedError'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+    get:
+      tags:
+        - Task
+      security:
+        - jwtAuth: [ ]
+      summary: Get all tasks
+      description: Allows you to get all the tasks
+      operationId: getAllTasks
+      responses:
+        "200":
+          description: Successful receipt
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TaskResponse'
+
+        "401":
+          $ref: '#/components/responses/UnauthorizedError'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+  /api/tasks/{id}:
+    get:
+      tags:
+        - Task
+      security:
+        - jwtAuth: [ ]
+      summary: Get task
+      description: Allows you to get a task by ID
+      operationId: getTaskById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successful receipt of the task
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskResponse'
+        "400":
+          $ref: '#/components/responses/ValidationError'
+        "401":
+          $ref: '#/components/responses/UnauthorizedError'
+        "404":
+          $ref: '#/components/responses/TaskNotFoundError'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+    delete:
+      tags:
+        - Task
+      security:
+        - jwtAuth: [ ]
+      summary: Delete task
+      description: Allows you to delete a task by ID
+      operationId: deleteTaskById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Successfully deleted task
+        "400":
+          $ref: '#/components/responses/ValidationError'
+        "401":
+          $ref: '#/components/responses/UnauthorizedError'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+    patch:
+      tags:
+        - Task
+      security:
+        - jwtAuth: [ ]
+      summary: Update task
+      description: Allows you to update the task
+      operationId: updateTask
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskUpdate'
+      responses:
+        "200":
+          description: Successful receipt of the task
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskResponse'
+        "401":
+          $ref: '#/components/responses/UnauthorizedError'
+        "404":
+          $ref: '#/components/responses/TaskNotFoundError'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+
+components:
+  schemas:
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
+    Registration:
+      type: object
+      properties:
+        email:
+          type: string
+          maxLength: 255
+        password:
+          type: string
+          minLength: 5
+          maxLength: 20
+    Jwt:
+      type: object
+      properties:
+        jwt:
+          type: string
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        email:
+          type: string
+    TaskCreation:
+      type: object
+      properties:
+        title:
+          type: string
+        text:
+          type: string
+    TaskUpdate:
+      type: object
+      properties:
+        title:
+          type: string
+        text:
+          type: string
+        status:
+          type: string
+          enum:
+            - NOT_DONE
+            - IN_PROGRESS
+            - DONE
+    TaskResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        title:
+          type: string
+        text:
+          type: string
+        owner:
+          $ref: '#/components/schemas/User'
+        status:
+          type: string
+          enum:
+            - NOT_DONE
+            - IN_PROGRESS
+            - DONE
+        performedAt:
+          type: string
+          format: date-time
+  responses:
+    UnauthorizedError:
+      description: User is not authorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    InternalServerError:
+      description: Unknown error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    TaskNotFoundError:
+      description: Task isn't found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    ValidationError:
+      description: Validation error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+  securitySchemes:
+    jwtAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
