@@ -1,4 +1,4 @@
-.gradle
+TaskTrackerBackend/.gradle
 build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
@@ -34,3 +34,4 @@ out/
 
 ### VS Code ###
 .vscode/
+/TaskTrackerBackend/src/main/resources/application-dev.yml
