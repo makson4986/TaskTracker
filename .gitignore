@@ -2,3 +2,4 @@
 /TaskTrackerScheduler
 /TaskTrackerBackend
 /TaskTrackerSummarization
+/.env
