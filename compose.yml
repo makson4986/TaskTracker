@@ -10,7 +10,7 @@ services:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
     volumes:
       - postgres-data:/var/lib/postgresql/data
-      - ./postgres-init:/docker-entrypoint-initdb.d 
+      - ./init/postgres-init.sql:/docker-entrypoint-initdb.d/postgres-init.sql:ro
     networks:
       - task-tracker
   kafka-1:
@@ -87,6 +87,21 @@ services:
       KAFKA_CLUSTERS_0_BOOTSTRAP_SERVERS: kafka-1:9092,kafka-2:9092,kafka-3:9092
     networks:
       - task-tracker
+  kafka-init:
+    image: apache/kafka:4.1.2
+    container_name: kafka-init
+    depends_on:
+      - kafka-1
+      - kafka-2
+      - kafka-3
+    volumes:
+      - ./init/kafka-init.sh:/kafka-init.sh:ro
+    entrypoint: ["/bin/bash", "/kafka-init.sh"]
+    environment:
+      KAFKA_BOOTSTRAP_SERVER: kafka-1:9092,kafka-2:9092,kafka-3:9092
+    networks:
+      - task-tracker
+    restart: "no"
   nginx:
     image: nginx:1.29.8
     container_name: nginx 
@@ -102,10 +117,16 @@ services:
     build: ./TaskTrackerBackend
     container_name: task-tracker-backend
     depends_on:
-      - postgres
-      - kafka-1
-      - kafka-2
-      - kafka-3
+      postgres:
+        condition: service_started
+      kafka-1:
+        condition: service_started
+      kafka-2:
+        condition: service_started
+      kafka-3:
+        condition: service_started
+      kafka-init:
+        condition: service_completed_successfully
     environment:
       DB_HOST: ${DB_HOST}
       DB_PORT: ${DB_PORT}
@@ -121,10 +142,16 @@ services:
     build: ./TaskTrackerScheduler
     container_name: task-tracker-scheduler
     depends_on:
-      - postgres
-      - kafka-1
-      - kafka-2
-      - kafka-3
+      postgres:
+        condition: service_started
+      kafka-1:
+        condition: service_started
+      kafka-2:
+        condition: service_started
+      kafka-3:
+        condition: service_started
+      kafka-init:
+        condition: service_completed_successfully
     environment:
       DB_HOST: ${DB_HOST}
       DB_PORT: ${DB_PORT}
@@ -142,9 +169,16 @@ services:
     build: ./TaskTrackerSummarization
     container_name: task-tracker-summarization
     depends_on:
-      - kafka-1
-      - kafka-2
-      - kafka-3
+      postgres:
+        condition: service_started
+      kafka-1:
+        condition: service_started
+      kafka-2:
+        condition: service_started
+      kafka-3:
+        condition: service_started
+      kafka-init:
+        condition: service_completed_successfully
     environment:
       KAFKA_BROKER_URL: ${KAFKA_BROKER_URL}
       KAFKA_SUMMARIZATION_REQUESTS_TOPIC: ${KAFKA_SUMMARIZATION_REQUESTS_TOPIC}
@@ -158,9 +192,14 @@ services:
     build: ./TaskTrackerMail
     container_name: task-tracker-mail
     depends_on:
-      - kafka-1
-      - kafka-2
-      - kafka-3
+      kafka-1:
+        condition: service_started
+      kafka-2:
+        condition: service_started
+      kafka-3:
+        condition: service_started
+      kafka-init:
+        condition: service_completed_successfully
     environment:
       KAFKA_BROKER_URL: ${KAFKA_BROKER_URL}
       KAFKA_REPORT_TOPIC: ${KAFKA_REPORT_TOPIC}
