@@ -3,3 +3,4 @@
 /TaskTrackerBackend
 /TaskTrackerSummarization
 /.env
+/compose.dev.yml
