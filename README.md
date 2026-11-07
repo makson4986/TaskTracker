@@ -103,5 +103,5 @@ LLM_AUTHORIZATION_KEY=AUTHORIZATION_KEY
 JWT_SECRET=JWT_SECRET
 TASK_BACKEND_URL=BACKEND_URL_IN_DOCKER
 ```
-4. Для получения Docker Image и запуска приложения используйте данныю команду:   
+4. Для получения Docker Image и запуска приложения используйте данную команду:   
 `docker compose up -d --build`
