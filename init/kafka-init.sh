@@ -1,8 +1,6 @@
-
 set -e
 
 BOOTSTRAP_SERVER="${KAFKA_BOOTSTRAP_SERVER}"
-
 
 until /opt/kafka/bin/kafka-topics.sh \
     --bootstrap-server "$BOOTSTRAP_SERVER" \
@@ -27,9 +25,9 @@ create_topic() {
         --replication-factor 3
 }
 
-create_topic "EMAIL_SENDING_TASKS"
-create_topic "GREETING_SENDING"
-create_topic "SUMMARIZATION_REQUESTS"
-create_topic "SUMMARIZATION_RESPONSES"
+create_topic "$KAFKA_GREETING_TOPIC"
+create_topic "$KAFKA_SUMMARIZATION_REQUESTS_TOPIC"
+create_topic "$KAFKA_SUMMARIZATION_RESPONSES_TOPIC"
+create_topic "$KAFKA_REPORT_TOPIC"
 
 echo "All topics created successfully"

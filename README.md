@@ -43,7 +43,65 @@
 * Mockito
 * Testcontainers
 * Nginx
+* CI/CD
 
 ### Деплой
 
-Для запуска приложений
+Для запуска приложений необходимо предустановить Docker & Docker Compose
+
+1. Клонируйте данный [репозиторий](https://github.com/makson4986/TaskTracker):    
+`git clone https://github.com/makson4986/TaskTracker.git`
+2. Перейдите в папку `TaskTracker`
+3. Создайте в текущей папке файл `.env` и заполните его переменными:
+```
+Переменные для базы данных
+
+DB_HOST=POSTGRES_HOST_IN_DOCKER
+DB_PORT=POSTGRES_PORT
+DB_USERNAME=USERNAME
+DB_PASSWORD=PASSWORD
+DB_NAME_BACKEND=DB_NAME_FOR_BACKEND
+DB_NAME_SCHEDULER=DB_NAME_FOR_SCHEDULER
+```
+
+```
+Кроны для генерации отчетов и отравки их на почту
+SCHEDULER_CRONS_GENERATION_REQUEST=CRONS_FOR_GENERATION_REPORTS_DEFAULT_0_AM
+SCHEDULER_CRONS_SENDING_REPORTS=CRONS_FOR_SENDING_REPORS_VIA_EMAIL_DEFAULT_6_AM
+```
+
+```
+Переменные для SMTP сервера
+
+MAIL_HOST=HOST
+MAIL_PORT=PORT
+MAIL_USERNAME=USERNAME
+MAIL_PASSWORD=PASSWORD
+MAIL_FROM=FROM_EMAIL
+```
+
+```
+Переменные для Kafka
+
+KAFKA_BROKER_URL=BROKERS_URL
+KAFKA_GREETING_TOPIC=TOPIC_NAME_FOR_GREETING
+KAFKA_SUMMARIZATION_REQUESTS_TOPIC=TOPIC_NAME_FOR_SUMMARIZATION_REQUESTS
+KAFKA_SUMMARIZATION_RESPONSES_TOPIC=TOPIC_NAME_FOR_SUMMARIZATION_RESPONSES
+KAFKA_REPORT_TOPIC=TOPIC_NAME_FOR_REPORTS_READY_SENDING
+```
+
+```
+Переменные для интеграции с GigaChat API
+
+LLM_MODEL=GIGA_CHAT_MODEL
+LLM_AUTH_URL=https://ngw.devices.sberbank.ru:9443/api/v2/oauth
+LLM_API_URL=https://api.giga.chat/v1
+LLM_AUTHORIZATION_KEY=AUTHORIZATION_KEY
+```
+
+```
+JWT_SECRET=JWT_SECRET
+TASK_BACKEND_URL=BACKEND_URL_IN_DOCKER
+```
+4. Для получения Docker Image и запуска приложения используйте данныю команду:   
+`docker compose up -d --build`
