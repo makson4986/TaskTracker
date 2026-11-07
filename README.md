@@ -23,8 +23,8 @@
 
 ### Архитектура
 * [Backend Service](https://github.com/makson4986/TaskTrackerBackend) - приложение предоставляющие API для работы с пользователя и задачами
-* [Scheduler Service](https://github.com/makson4986/TaskTrackerScheduler) - планирощик, запускающий ежедневную генерацию отчетов
-* [Mail Service](https://github.com/makson4986/TaskTrackerMail) - сервис для рассылки привественных писем и ежедневных отчетов
+* [Scheduler Service](https://github.com/makson4986/TaskTrackerScheduler) - планировщик, запускающий ежедневную генерацию отчетов
+* [Mail Service](https://github.com/makson4986/TaskTrackerMail) - сервис для рассылки приветственных писем и ежедневных отчетов
 * [Summarization Service](https://github.com/makson4986/TaskTrackerSummarization) - приложение, отвечающее за генерацию отчетов и интеграцию с API GigaChat
 
 ### Технологический стек
@@ -44,6 +44,23 @@
 * Testcontainers
 * Nginx
 * CI/CD
+
+### Схема взаимодействия микросервисов
+
+```mermaid
+graph TD
+    Client[Клиент] -->|HTTP/REST| Backend[Backend Service]
+    
+    Backend -->|Событие регистрации| Kafka{{Apache Kafka}}
+    Kafka -->|Получение отчетов/привествий| Mail[Mail Service]
+
+    Scheduler[Scheduler Service] <-->|Генерация отчетов через RPC| Summarization[Summarization Service]
+    Summarization -->|Запрос к LLM по API| GigaChat((GigaChat API))
+    Scheduler -->|Сохранение и чтение отчетов| DB[(PostgreSQL)]
+
+    Scheduler -->|Событие отправки отчетов| Kafka
+     Mail -->|SMTP| Email[(Email пользователя)]
+```    
 
 ### Деплой
 
@@ -65,7 +82,7 @@ DB_NAME_SCHEDULER=DB_NAME_FOR_SCHEDULER
 ```
 
 ```
-Кроны для генерации отчетов и отравки их на почту
+Кроны для генерации отчетов и отправки их на почту
 SCHEDULER_CRONS_GENERATION_REQUEST=CRONS_FOR_GENERATION_REPORTS_DEFAULT_0_AM
 SCHEDULER_CRONS_SENDING_REPORTS=CRONS_FOR_SENDING_REPORS_VIA_EMAIL_DEFAULT_6_AM
 ```
