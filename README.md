@@ -122,3 +122,6 @@ TASK_BACKEND_URL=BACKEND_URL_IN_DOCKER
 ```
 4. Для получения Docker Image и запуска приложения используйте данную команду:   
 `docker compose up -d --build`
+5. Приложение будет доступно по следующим адресам:
+   * Task Tracker API - http://{host}:80/api/docs
+   * Kafka UI - http://{host}:9000
